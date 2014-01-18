@@ -43,9 +43,14 @@ Hamock.prototype.handle = function handle(socket) {
   socket.on('data', function data(buffer) {
     command += buffer;
   }).on('end', function end() {
+<<<<<<< HEAD
     var handler = command.trim();
     if (handler.match('show sess')) handler = handler.substring(0, 9);
     var data = this.commands[handler];
+=======
+    var handler = command.trim()
+      , data = this.commands[handler];
+>>>>>>> 5320e89a7be32c16233ea6aa45592fa1ff07724b
 
     socket.end(data || 'Unkown command: "'+ handler +'"');
   }.bind(this));

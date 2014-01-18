@@ -193,9 +193,6 @@ HAProxy.prototype.send = function send(command) {
  */
 HAProxy.prototype.parse = function parse(using, buffer, fn, command) {
   var result, err;
-  function returnNumOrStr(item) {
-    return !isNaN(+item) ? +item : item;
-  }
   //
   // Received an emptry response from the socket
   //
@@ -214,28 +211,11 @@ HAProxy.prototype.parse = function parse(using, buffer, fn, command) {
   } else if (command === 'show sess' && ~buffer.indexOf(': ')) {
     // note: this will only parse the full list of sessions
     // for single session stats a different parser is needed
-    result = this.output.sessions()
+    result = this.output.sessions(buffer);
   } else if (~buffer.indexOf('\n')) {
-    result = buffer.split('\n').reduce(function reducer(data, line) {
-      line = line.trim();
-      if (!line) return data;
-      //
-      // Figure out how we are going to parse the response. Nearly every
-      // response from thing thing requires a dedicated parser ._. because fuck
-      // consistency right?
-      //
-      if ('object' === using) {
-        var kv = line.split(':');
-
-        var val = kv[1].trim();
-        data[kv[0]] = returnNumOrStr(val);
-      }
-
-      return data;
-    }, {});
+    result = this.output.default(buffer)
   } else if (~buffer.indexOf('initial')) {
-    var data = /(\d*)\s\(initial\s(\d*)\)/.exec(buffer);
-    result = { current: +data[1], initial: +data[2] };
+    result = this.output.initial(buffer);
   } else {
     err = new Error(buffer);
     err.command = command;

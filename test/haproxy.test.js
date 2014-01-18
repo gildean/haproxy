@@ -303,7 +303,6 @@ describe('haproxy', function () {
       });
     });
   });
-
   describe('#session', function () {
     it('returns an object with all the sessions if no id is provided', function (done) {
       var proxy = new HAProxy({ socket: '/tmp/fixture.sock' });
